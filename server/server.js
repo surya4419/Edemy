@@ -7,6 +7,8 @@ import morgan from "morgan";
 import educatorRouter from "./routes/educatorRoutes.js";
 import { clerkMiddleware } from "@clerk/express";
 import connectCloudinary from "./configs/cloudinary.js";
+import courseRouter from "./routes/courseRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 
 // Initialize Express
 const app = express();
@@ -42,6 +44,9 @@ const startServer = async () => {
     app.get("/", (req, res) => res.send("API Working"));
     app.post("/clerk", clerkWebhooks);
     app.use("/api/educator", express.json(), educatorRouter);
+    app.use("/api/course",express.json(), courseRouter)
+    app.use("/api/user",express.json(), userRouter)
+
 
     // Port configuration
     const PORT = process.env.PORT || 5000;
@@ -56,3 +61,4 @@ const startServer = async () => {
 
 // Start the server
 startServer();
+ 
