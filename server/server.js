@@ -4,21 +4,25 @@ import "dotenv/config"
 import connectDB from "./configs/mongodb.js"
 import { clerkWebhooks } from "./controllers/webhooks.js"
 import morgan from "morgan"
+import educatorRouter from "./routes/educatorRoutes.js"
+import { clerkMiddleware } from "@clerk/express"
+import connectCloudinary from "./configs/cloudinary.js"
 
 // Initialize Express
 const app = express()
 
 // Connect to database
-;(async () => {
+(async () => {
   await connectDB()
 })()
-
+await connectCloudinary()
 
 // Middleware
 app.use(cors())
 app.use(morgan("dev"))
 app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded({ extended: true }))
+app.use(clerkMiddleware())
 
 // Verify Clerk webhook secret middleware
 app.use("/clerk", (req, res, next) => {
@@ -39,6 +43,7 @@ app.use((req, res, next) => {
 // Routes
 app.get("/", (req, res) => res.send("API Working"))
 app.post("/clerk", clerkWebhooks)
+app.use("/api/educator",express.json(),educatorRouter)
 
 // Port configuration
 const PORT = process.env.PORT || 5000
