@@ -5,7 +5,7 @@ const lectureSchema = new mongoose.Schema({
     lectureTitle:{type:String, required:true},
     lectureDuration:{type:Number, required:true},
     lectureUrl:{type:String, required:true},
-    isPreviewFree:{typr:Boolean,required:true},
+    isPreviewFree:{type:Boolean,required:true},
     lectureOrder:{type:Number, required:true}
 },{_id:false})
 
