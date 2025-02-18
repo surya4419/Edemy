@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.22.11",
+    "axios": "^1.7.9",
     "humanize-duration": "^3.32.1",
     "quill": "^2.0.3",
     "rc-progress": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",
+    "react-toastify": "^11.0.3",
     "react-youtube": "^10.1.0",
     "uniqid": "^5.4.0"
   },

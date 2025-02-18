@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import Stripe from "stripe";
 import { response } from "express";
 import Course from "../models/Course.js";
+import { Purchase } from "../models/Purchase.js";
+
 
 // Api controller function to clerk user with database
 export const clerkWebhooks = async (req, res) => {
@@ -106,7 +108,8 @@ export const stripeWebhook = async (req, res) => {
 
     let event;
     try {
-        event = Stripe.Webhooks.constructEvent(request.body, sig, process.env.STRIPR_WEBHOOK_SECRET);
+    event = Stripe.Webhooks.constructEvent(req.rawBody || req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+
     } catch (error) {
         response.status(400).send(`webhook error ${error.message}`)
     }
@@ -125,7 +128,8 @@ export const stripeWebhook = async (req, res) => {
 
             const purchaseData = await Purchase.findById(purchasedId)
             const userData = await User.findById(purchaseData.userId)
-             const courseData = await Course.findById(purchaseData.CourseId.toString())
+             const courseData = await Course.findById(purchaseData.courseId.toString())
+
 
              courseData.enrolledStudents.push(userData)
              await courseData.save()
@@ -139,8 +143,9 @@ export const stripeWebhook = async (req, res) => {
             break;
         }
         case 'payment_intent.payment_failed': {
-            const paymentMethod = event.data.object;
+            const paymentIntent = event.data.object;
             const paymentIntentId = paymentIntent.id;
+
 
             const session = await stripeInstance.checkout.sessions.list({
                 payment_intent : paymentIntentId

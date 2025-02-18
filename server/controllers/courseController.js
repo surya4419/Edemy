@@ -13,7 +13,7 @@ export const getAllCourses = async (req, res) => {
 
 //get course by id
 export const getCourseId = async (req, res) => {
-    const {id} = req.parama
+    const {id} = req.params
 
     try {
         const courseData = await Course.findById(id).populate({path:'educator'})

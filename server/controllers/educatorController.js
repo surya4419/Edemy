@@ -25,15 +25,37 @@ export const updateRoleToEducator = async (req,res)=>{
 export const addCourse =  async (req,res)=>{
     try {
         const {courseData} = req.body
-        const imageFile = req.imageFile
+        const imageFile = req.file
         const educatorId = req.auth.userId
 
         if(!imageFile){
-            return res.json({success:false,message:'Please upload a course image'})
+            return res.status(400).json({success:false,message:'Please upload a course image'})
         }
-        const parsedCourseData = await JSON.parse(courseData)
+        const parsedCourseData = JSON.parse(courseData)
+        parsedCourseData.educator = educatorId
+        
+        // Validate course content structure
+        if (!parsedCourseData.courseContent || !Array.isArray(parsedCourseData.courseContent)) {
+            return res.status(400).json({ success: false, message: 'Invalid course content structure' });
+        }
+        
+        // Validate each chapter has required fields
+        for (const chapter of parsedCourseData.courseContent) {
+            if (!chapter.chaptertitle || !chapter.chapterId || chapter.chapterOrder === undefined) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Each chapter must have chaptertitle, chapterId, and chapterOrder' 
+                });
+            }
+        }
+        
         const newCourse = await Course.create(parsedCourseData)
-        const imageUpload = await cloudinary.uploader.upload(imageFile.path)
+
+        const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+            folder: 'course-thumbnails',
+            resource_type: 'image'
+        })
+
         newCourse.courseThumbnail = imageUpload.secure_url
         await newCourse.save()
 
